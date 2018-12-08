@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+	<title>Le-vap Catalogue	</title>
+
+	
+	<link rel="stylesheet" href="css/app.css">
+	
+	<script src="js/jquery-3.3.1.min.js"></script>
+	<script src="js/app.js"></script>
+	<script src="phonegap.js"></script>
+	
+</head>
+<body>
+	<script type="text/javascript">
+	
+	window.hs = (typeof window.hs == "undefined" ) ? {} : window.hs;
+
+	hs.data = {
+		allbrands : {
+			heading: "Brand Exploror",
+			para: "some small message about things etc",
+			brands : [
+				{name : "brand a", key:"branda1",brandid: 21,productSet: [1,2,3,4,5,6], background: "",},
+				{name : "brand b", key:"branda2",brandid: 21,productSet: [1,2,3,4,5,6], background: "",},
+				{name : "brand c", key:"branda3",brandid: 21,productSet: [1,2,3,4,5,6], background: "",},
+				{name : "brand j", key:"branda4",brandid: 21,productSet: [1,2,3,4,5,6], background: "",},
+				{name : "brand i", key:"branda5",brandid: 21,productSet: [1,2,3,4,5,6], background: "",},
+				{name : "brand h", key:"branda6",brandid: 21,productSet: [1,2,3,4,5,6], background: "",},
+				{name : "brand g", key:"branda7",brandid: 21,productSet: [1,2,3,4,5,6], background: "",},
+				{name : "brand f", key:"branda8",brandid: 21,productSet: [1,2,3,4,5,6], background: "",},
+				{name : "brand e", key:"branda9",brandid: 21,productSet: [1,2,3,4,5,6], background: "",},
+				{name : "brand d", key:"branda0",brandid: 21,productSet: [1,2,3,4,5,6], background: "",},
+			]
+		},
+		allflavours : {
+			heading: "Flavour Exploror",
+			para: "some small message about things etc",
+			flavours : [
+				{name : "Flavour a", key:"flav1",flavourid: 21,productSet: [1,2,3,4,5,6], background: "",},
+				{name : "Flavour b", key:"flav2",flavourid: 21,productSet: [1,2,3,4,5,6], background: "",},
+				{name : "Flavour c", key:"flav3",flavourid: 21,productSet: [1,2,3,4,5,6], background: "",},
+				{name : "Flavour j", key:"flav4",flavourid: 21,productSet: [1,2,3,4,5,6], background: "",},
+				{name : "Flavour i", key:"flav5",flavourid: 21,productSet: [1,2,3,4,5,6], background: "",},
+			
+			]
+		},
+		allproducts : [
+			{productid : 1, name : "some name" , description: "some description", image : "img.jpg", brand : "branda1" , flavours : ["flav1" ,"flav2"] },
+			{productid : 2, name : "some name" , description: "some description", image : "img.jpg", brand : "branda1" , flavours : ["flav1" ,"flav2"] },
+			{productid : 3, name : "some name" , description: "some description", image : "img.jpg", brand : "branda1" , flavours : ["flav1" ,"flav2"] },
+			{productid : 4, name : "some name" , description: "some description", image : "img.jpg", brand : "branda1" , flavours : ["flav1" ,"flav2"] },
+			{productid : 5, name : "some name" , description: "some description", image : "img.jpg", brand : "branda1" , flavours : ["flav1" ,"flav2"] },
+			{productid : 6, name : "some name" , description: "some description", image : "img.jpg", brand : "branda1" , flavours : ["flav1" ,"flav2"] },
+			{productid : 7, name : "some name" , description: "some description", image : "img.jpg", brand : "branda1" , flavours : ["flav1" ,"flav2"] },
+
+		]
+	}
+
+
+
+		hs.breadcrums = {
+			stack : [],
+			render : function() {
+
+			},
+			manage:  function($obj) {
+
+			}
+		}
+		hs.templateEngin = {};
+		hs.templateEngin.renderStr = function($t, $data ) {
+			//$t = $("#" + $template);
+			$.each( $data , function(k,v) {
+				
+
+				if ($t.find("[data-" + k + "]").length) {
+
+					$templatemod = ( typeof $t.find("[data-" + k + "]").attr("data-templatingMode") != "undefined" ) ? $t.find("[data-" + k + "]").attr("data-templatingMode") : "insert";
+					switch( $templatemod ) {
+						case "insert": 
+							$t.find("[data-" + k + "]").html(v)
+						break;
+						case "append": 
+							$t.find("[data-" + k + "]").append(v)
+						break;
+
+					}
+				}
+
+			});
+			$reg = /{!{[A-za-z1-9_]*( [A-za-z1-9_]*="[a-z1-9A-Z_'-]*")*}}/gm;
+			
+			$html = $t[0].outerHTML;
+
+			$.each( $data , function(k,v) {
+			
+				$reg = new RegExp('{!{'+k+'( [A-za-z1-9_]*="[a-z1-9A-Z_\'-]*")*}}', 'gm');
+				$reg = new RegExp('{!{'+k+'}}', 'gm');
+
+				// not processing any attrs
+
+				$html = $html.replace( $reg , v);
+
+				// set = $reg2.exec($html);
+				// for (var i = 0; i < set.length; i++) {
+				// 	if (set[i] != "undefined") {
+				// 		set[i]
+				// 	}
+				// }
+
+
+			})
+
+			return $html;
+		}
+		hs.templateEngin.getTemplateObject = function($n) {
+			$str = $("#" + $n).html();
+			return $($str);
+
+		}
+		hs.templateEngin.render = function ($template, $data ) {
+
+			$str = hs.templateEngin.renderStr($template, $data);
+			$("#innerContent").html($str);
+		}
+
+		
+		
+		hs.controllers = {};
+		hs.registorController = function($c , $d) {
+			// check if contoller exist;
+			if ( typeof hs.controllers[ $c ] != "undefined" ) {
+				console.log("contoller already exist ! updating contoller");
+			}
+			hs.controllers[ $c ] = {
+				template : $d.template,
+				data : $d.data,
+				beforeAdapt : $d.beforeAdapt,
+				stackLevel : $d.stackLevel
+			}
+		};
+		hs.deafultController = function( $contollerName ) {
+			hs.deafultControllerName = $contollerName;
+		}
+		hs.controllerCall = function($controller , $prams) {
+			if ( typeof hs.controllers[$controller] == "undefined" ) {
+				console.log("no controller exist");
+			} else {
+				// get controller
+				$cc = hs.controllers[$controller] ;
+				// get template
+				$template = hs.templateEngin.getTemplateObject($cc.template);
+				// call adaptor before templating
+				adaptedData = $cc.beforeAdapt($template , $cc.data,  $prams  );
+				// adapt template 
+				hs.templateEngin.render(adaptedData.template,adaptedData.data );
+			}
+		}
+		$(document).ready(function(){
+
+			hs.controllerCall(hs.deafultControllerName);
+
+		})
+
+		$(document).on("click" , "[data-controller]", function () {
+
+			// running controller function
+			$controller = $(this).attr("data-controller");
+			if ( typeof hs.controllers[$controller] == "undefined" ) {
+				console.log("no controller exist");
+				return 0;
+			}
+			// add class active 
+			$(".active_link").removeClass("active_link");
+			$(this).addClass("active_link");
+			// get parameters
+			$prams = $(this).attr("data-controllerParameter");
+			hs.controllerCall($controller,$prams)
+		});
+
+		hs.helper = {
+			getElemType : function(e) {
+				var c = e.constructor.toString();
+				return c.substr(9 , c.indexOf("()") - 9).toLowerCase() ;
+			},
+		};
+		hs.model = {
+			getProduct : function(id) {
+				for (var i = 0; i < hs.data.allproducts.length; i++) {
+					if ( hs.data.allproducts[i].productid == id ) {
+						return hs.data.allproducts[i];
+					}
+				}
+				return undefined;
+			},
+			getBrand : function(id) {
+				for (var i = 0; i < hs.data.allbrands.brands.length; i++) {
+					if ( hs.data.allbrands.brands[i].brandid == id ) {
+						return hs.data.allbrands.brands[i];			
+					}
+				}
+				return undefined;
+				
+			},
+			getFlavour : function(id) {
+				for (var i = 0; i < hs.data.allflavours.flavours.length; i++) {
+					if ( hs.data.allflavours.flavours[i].flavourid == id ) {
+						return hs.data.allflavours.flavours[i];			
+					}
+				}
+				return undefined;
+			},
+			getBrandBy : function(entitiy,eVal ) {
+				$set = [];
+				for (var i = 0; i < hs.data.allbrands.brands.length; i++) {
+					$e =  hs.data.allbrands.brands[i][entitiy];
+					switch( hs.helper.getElemType($e) ) {
+						case "array": 
+							if (  $e.indexOf(eVal)  ) {
+								$set.push( $e )
+							}
+						break;
+						case "object": 
+							if (  typeof $e[eVal] != "undefined" || $e.equal(eVal)  ) {
+								$set.push( $e )
+							}
+						break;
+						default : 
+							if (  $e == eVal  ) {
+								$set.push( $e )
+							}
+						break;
+					}
+				}
+				return $set;
+				
+			},
+			getFlavourBy : function(entitiy,eVal ) {
+				$set = [];
+				for (var i = 0; i < hs.data.allflavours.flavours.length; i++) {
+
+					$e =  hs.data.allflavours.flavours[i][entitiy];
+					switch( hs.helper.getElemType($e) ) {
+						case "array": 
+							if (  $e.indexOf(eVal)  ) {
+								$set.push( $e )
+							}
+						break;
+						case "object": 
+							if (  typeof $e[eVal] != "undefined" || $e.equal(eVal)  ) {
+								$set.push( $e )
+							}
+						break;
+						default : 
+							if (  $e == eVal  ) {
+								$set.push( $e )
+							}
+						break;
+					}
+				}
+				return $set;
+			},
+			getProductBy : function(entitiy,eVal ) {
+				$set = [];
+				for (var i = 0; i < hs.data.allproducts.length; i++) {
+					$e = hs.data.allproducts[i][entitiy];
+					switch( hs.helper.getElemType($e) ) {
+						case "array": 
+							if (  $e.indexOf(eVal)  ) {
+								$set.push( $e )
+							}
+						break;
+						case "object": 
+							if (  typeof $e[eVal] != "undefined" || $e.equal(eVal)  ) {
+								$set.push( $e )
+							}
+						break;
+						default : 
+							if (  $e == eVal  ) {
+								$set.push( $e )
+							}
+						break;
+					}
+					
+				}
+				return $set;
+			},
+
+
+		}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		// templating function
+
+		hs.registorController("allbrands", {
+			template : "allbrands_template",
+			data : hs.data.allbrands ,
+			stackLevel : 1,
+			beforeAdapt : function(template , data, prams) {
+			
+				ssstr = "";
+				$.each(data.brands , function(k,v) {
+					$tem = hs.templateEngin.getTemplateObject("brandthumbnail_template");
+					s = hs.templateEngin.renderStr($tem , v);
+					ssstr += s;
+
+					
+				});
+				data.allbrands = ssstr;
+
+				return {
+					template:template,
+					data:data,
+					prams:prams
+				}
+			},
+		});
+
+		// templating function
+		hs.registorController("allflavours", {
+			template : "allflavours_template",
+			data : hs.data.allflavours ,
+			stackLevel : 1,
+			beforeAdapt : function(template , data, prams) {
+				ssstr = "";
+				$.each(data.flavours , function(k,v) {
+					$tem = hs.templateEngin.getTemplateObject("flavourthumbnail_template");
+					s = hs.templateEngin.renderStr($tem , v);
+					ssstr += s;
+
+					
+				});
+				data.allflavours = ssstr;
+				return {
+					template:template,
+					data:data,
+					prams:prams
+				}
+			},
+		});
+		hs.deafultController("allflavours");
+
+		// templating function
+		hs.registorController("brand", {
+			template : "brand_template",
+			stackLevel : 2,
+			data : hs.data.allbrands ,
+			beforeAdapt : function(template , data, prams) {
+				
+				$current_brand = hs.model.getBrand(prams)
+				
+
+				data["name"] = $current_brand.name;
+				strss = "";
+				for (var i = 0; i < $current_brand.productSet.length; i++) {
+
+					var pid = $current_brand.productSet[i];
+					var p = hs.model.getProduct(pid);
+					
+					$tem = hs.templateEngin.getTemplateObject("product_grid_template");
+					s = hs.templateEngin.renderStr($tem , p);
+					strss += s;
+
+				}
+				
+
+				data["product_list"] = strss;
+				return {
+					template:template,
+					data:data,
+					prams:prams
+				}
+			},
+		});
+		// templating function
+		hs.registorController("flavour", {
+			template : "flavour_template",
+			stackLevel : 2,
+			data : hs.data.allflavours ,
+			beforeAdapt : function(template , data, prams) {
+			
+				$current_flavour = hs.model.getFlavour(prams)
+				
+
+				data["name"] = $current_flavour.name;
+				strss = "";
+				for (var i = 0; i < $current_flavour.productSet.length; i++) {
+
+					var pid = $current_flavour.productSet[i];
+					var p = hs.model.getProduct(pid);
+					
+					$tem = hs.templateEngin.getTemplateObject("product_grid_template");
+					s = hs.templateEngin.renderStr($tem , p);
+					strss += s;
+
+				}
+				
+
+				data["product_list"] = strss;
+				return {
+					template:template,
+					data:data,
+					prams:prams
+				}
+			},
+		});
+		// templating function
+		hs.registorController("product", {
+			template : "product_template",
+			stackLevel : 3,
+			data : hs.data.products ,
+			beforeAdapt : function(template , data, prams) {
+				
+				$current_product = hs.model.getProduct(prams);
+
+				data = $current_product
+				return {
+					template:template,
+					data:data,
+					prams:prams
+				}
+			},
+		});
+		
+
+
+
+
+	</script>
+	<div id="content-wraper">
+		<header>
+			<div class="action-btn"></div>
+			<div class="logo" id="applogo">
+				<img src="imgs/logo.png">
+			</div>
+		</header>
+		<div id="innerContent"></div>
+		<div id="footer">
+			<div class="buttons-toogle">
+				<span data-controller="allflavours" class="">Fruits</span>
+				<span data-controller="allbrands" class="">Brands</span>
+			</div>
+			<div class="breadcrums"></div>
+			<div class="menu"></div>
+
+		</div>
+	</div>
+
+
+
+
+
+
+
+
+	<div class="hide templates_container">
+
+		<div id="allbrands_template">
+			<div class="template allbrands"  >
+				<div class="big"><h2 data-heading></h2><p data-para></p></div>{!{allbrands}}
+			</div>
+		</div>
+		<div id="allflavours_template">
+			<div class="template allflavours">
+				<div class="big"><h2 data-heading></h2><p data-para></p></div>{!{allflavours}}
+			</div>
+		</div>
+
+		<div id="brandthumbnail_template">
+			<div data-controller="brand" data-controllerParameter="{!{brandid}}">
+				<div class="inner-image-container" >
+					<img src="{!{logo}}" />
+					<p>{!{name}}</p>
+				</div>
+			</div>
+		</div>
+		<div id="flavourthumbnail_template">
+			<div data-controller="flavour" data-controllerParameter="{!{flavourid}}">
+				<div class="inner-image-container" >
+					<img src="{!{logo}}" />
+					<p>{!{name}}</p>
+				</div>
+			</div>
+		</div>
+
+		<div id="brand_template">
+			<div>
+				<h1>{!{name}}</h1>
+				<div class="c-s2 c-c">{!{product_list}}</div>
+			</div>
+		</div>
+
+		<div id="flavour_template">
+			<div>
+				<h1>{!{name}}</h1>
+				<div class="c-s2 c-c">{!{product_list}}</div>
+			</div>
+		</div>
+		
+		<div id="product_grid_template">
+
+			<div data-controller="product" data-controllerParameter="{!{productid}}">
+				<img src="{!{image}}">
+				<h3>{!{name}}</h3>
+			</div>
+		</div>
+		<div id="product_template">
+			<div class="c-c c-w5">
+				<div>
+					
+				</div><div>
+					<h2>{!{name}}</h2>
+					<p>{!{description}}</p>
+
+				</div>
+			</div>
+		</div>
+	</div>
+
+</body>
+</html>
