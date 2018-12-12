@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <widget xmlns   = "http://www.w3.org/ns/widgets"
     xmlns:gap   = "http://phonegap.com/ns/1.0"
-    id          = "com.binarylabsolutions.webappsmanager.levap-catalog "
+    id          = "com.le-vap.levap-catalog "
     versionCode = "1" 
     version     = "1.0.0" >
    <name>levap catalog</name>
     <description>
-           levap catalog
+      levap catalog
     </description>
     <author href="http://binarylabsolutions.com/" email="info@binarylabsolutions.com ">hassan nisar</author>
     
@@ -32,7 +32,7 @@
     <preference name="android-minSdkVersion" value="21" />
     <preference name="android-installLocation" value="auto" />
     
-     <platform name="ios">
+    <platform name="ios">
         <icon src="res/icon/ios/icon.png" width="57" height="57"/>
         <icon src="res/icon/ios/icon@2x.png" width="114" height="114"/>
         <icon src="res/icon/ios/icon-40.png" width="40" height="40"/>
@@ -49,35 +49,35 @@
         <icon src="res/icon/ios/icon-small.png" width="29" height="29"/>
         <icon src="res/icon/ios/icon-small@2x.png" width="58" height="58"/>
         <icon src="res/icon/ios/icon-small@3x.png" width="87" height="87"/>
-      </platform>
-      
-      <platform name="android">
-        <icon src="res/icon/android/drawable-hdpi-icon" qualifier="hdpi"/>
-        <icon src="res/icon/android/drawable-ldpi-icon" qualifier="ldpi"/>
-        <icon src="res/icon/android/drawable-mdpi-icon" qualifier="mdpi"/>
-        <icon src="res/icon/android/drawable-xhdpi-icon" qualifier="xhdpi"/>
-        <icon src="res/icon/android/drawable-xxhdpi-icon" qualifier="xxhdpi"/>
-        <icon src="res/icon/android/drawable-xxxhdpi-icon" qualifier="xxxhdpi"/>
-      </platform>
-      
-      <platform name="ios">
-        <splash src="res/screen/ios/Default~iphone.png" width="320" height="480"/>
-        <splash src="res/screen/ios/Default@2x~iphone.png" width="640" height="960"/>
-        <splash src="res/screen/ios/Default-Portrait~ipad.png" width="768" height="1024"/>
-        <splash src="res/screen/ios/Default-Portrait@2x~ipad.png" width="1536" height="2008"/>
-        <splash src="res/screen/ios/Default-736h.png" width="2208" height="1242"/>
-        <splash src="res/screen/ios/Default-667h.png" width="750" height="1334"/>
-        <splash src="res/screen/ios/Default-568h@2x~iphone.png" width="640" height="1136"/>
-      </platform>
-      
-      <platform name="android">
-        <splash src="res/screen/android/drawable-port-hdpi-screen" qualifier="hdpi"/>
-        <splash src="res/screen/android/drawable-port-ldpi-screen" qualifier="ldpi"/>
-        <splash src="res/screen/android/drawable-port-mdpi-screen" qualifier="mdpi"/>
-        <splash src="res/screen/android/drawable-port-xhdpi-screen" qualifier="xhdpi"/>
-        <splash src="res/screen/android/drawable-port-xxhdpi-screen" qualifier="xxhdpi"/>
-        <splash src="res/screen/android/drawable-port-xxxhdpi-screen" qualifier="xxxhdpi"/>
-      </platform>
+    </platform>
+       
+    <platform name="ios">
+      <splash src="res/screen/ios/Default~iphone.png" width="320" height="480"/>
+      <splash src="res/screen/ios/Default@2x~iphone.png" width="640" height="960"/>
+      <splash src="res/screen/ios/Default-Portrait~ipad.png" width="768" height="1024"/>
+      <splash src="res/screen/ios/Default-Portrait@2x~ipad.png" width="1536" height="2008"/>
+      <splash src="res/screen/ios/Default-736h.png" width="2208" height="1242"/>
+      <splash src="res/screen/ios/Default-667h.png" width="750" height="1334"/>
+      <splash src="res/screen/ios/Default-568h@2x~iphone.png" width="640" height="1136"/>
+    </platform>
+
+    <platform name="android">
+      <icon src="res/icon/android/drawable-hdpi-icon.png" qualifier="hdpi"/>
+      <icon src="res/icon/android/drawable-ldpi-icon.png" qualifier="ldpi"/>
+      <icon src="res/icon/android/drawable-mdpi-icon.png" qualifier="mdpi"/>
+      <icon src="res/icon/android/drawable-xhdpi-icon.png" qualifier="xhdpi"/>
+      <icon src="res/icon/android/drawable-xxhdpi-icon.png" qualifier="xxhdpi"/>
+      <icon src="res/icon/android/drawable-xxxhdpi-icon.png" qualifier="xxxhdpi"/>
+    </platform>
+     
+    <platform name="android">
+      <splash src="res/screen/android/drawable-port-hdpi-screen.png" qualifier="hdpi"/>
+      <splash src="res/screen/android/drawable-port-ldpi-screen.png" qualifier="ldpi"/>
+      <splash src="res/screen/android/drawable-port-mdpi-screen.png" qualifier="mdpi"/>
+      <splash src="res/screen/android/drawable-port-xhdpi-screen.png" qualifier="xhdpi"/>
+      <splash src="res/screen/android/drawable-port-xxhdpi-screen.png" qualifier="xxhdpi"/>
+      <splash src="res/screen/android/drawable-port-xxxhdpi-screen.png" qualifier="xxxhdpi"/>
+    </platform>
       
       <preference name="permissions" value="none"/>
       
