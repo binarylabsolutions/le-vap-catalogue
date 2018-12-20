@@ -324,3 +324,8 @@ div#footer .breadcrums {width: 70%;background: #252735;min-height: 20px;}
 div#footer .menu {width: 5%;background-color: #1b1c25;cursor: pointer;}
 
 
+.setting-sidebar ul li {display: block;color: #c8c8c8;padding: 10px;box-sizing: border-box;border-bottom: 1px solid #515151;background: #0000004a;text-transform: capitalize;cursor: pointer;}
+.setting-sidebar ul {width: 90%;}
+.setting-subview {background: #0000004a;padding: 20px;box-sizing: border-box;color: #c8c8c8;min-height: 60vh;}
+
+.setting-sidebar li.active_link {background: #a2a2a217;}

@@ -5,7 +5,6 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 	<title>Le-vap Catalogue	</title>
 
-	
 	<link rel="stylesheet" href="css/app.css">
 	
 	<script src="js/jquery-3.3.1.min.js"></script>
@@ -14,27 +13,26 @@
 	
 </head>
 <body>
-	<script type="text/javascript">
-	
-	window.hs = (typeof window.hs == "undefined" ) ? {} : window.hs;
 
-	hs.data = {
+	<script type="text/javascript">
+	/*
+
 		allbrands : {
-			heading: "Brand Exploror",
-			para: "some small message about things etc",
-			brands : [
-				{name : "brand a", key:"branda1",brandid: 21,productSet: [1,2,3,4,5,6], background: "",},
-				{name : "brand b", key:"branda2",brandid: 21,productSet: [1,2,3,4,5,6], background: "",},
-				{name : "brand c", key:"branda3",brandid: 21,productSet: [1,2,3,4,5,6], background: "",},
-				{name : "brand j", key:"branda4",brandid: 21,productSet: [1,2,3,4,5,6], background: "",},
-				{name : "brand i", key:"branda5",brandid: 21,productSet: [1,2,3,4,5,6], background: "",},
-				{name : "brand h", key:"branda6",brandid: 21,productSet: [1,2,3,4,5,6], background: "",},
-				{name : "brand g", key:"branda7",brandid: 21,productSet: [1,2,3,4,5,6], background: "",},
-				{name : "brand f", key:"branda8",brandid: 21,productSet: [1,2,3,4,5,6], background: "",},
-				{name : "brand e", key:"branda9",brandid: 21,productSet: [1,2,3,4,5,6], background: "",},
-				{name : "brand d", key:"branda0",brandid: 21,productSet: [1,2,3,4,5,6], background: "",},
-			]
-		},
+					heading: "Brand Exploror",
+					para: "some small message about things etc",
+					brands : [
+						{name : "brand a", key:"branda1",brandid: 21,productSet: [1,2,3,4,5,6], background: "",},
+						{name : "brand b", key:"branda2",brandid: 21,productSet: [1,2,3,4,5,6], background: "",},
+						{name : "brand c", key:"branda3",brandid: 21,productSet: [1,2,3,4,5,6], background: "",},
+						{name : "brand j", key:"branda4",brandid: 21,productSet: [1,2,3,4,5,6], background: "",},
+						{name : "brand i", key:"branda5",brandid: 21,productSet: [1,2,3,4,5,6], background: "",},
+						{name : "brand h", key:"branda6",brandid: 21,productSet: [1,2,3,4,5,6], background: "",},
+						{name : "brand g", key:"branda7",brandid: 21,productSet: [1,2,3,4,5,6], background: "",},
+						{name : "brand f", key:"branda8",brandid: 21,productSet: [1,2,3,4,5,6], background: "",},
+						{name : "brand e", key:"branda9",brandid: 21,productSet: [1,2,3,4,5,6], background: "",},
+						{name : "brand d", key:"branda0",brandid: 21,productSet: [1,2,3,4,5,6], background: "",},
+					]
+				},
 		allflavours : {
 			heading: "Flavour Exploror",
 			para: "some small message about things etc",
@@ -56,394 +54,777 @@
 			{productid : 6, name : "some name" , description: "some description", image : "img.jpg", brand : "branda1" , flavours : ["flav1" ,"flav2"] },
 			{productid : 7, name : "some name" , description: "some description", image : "img.jpg", brand : "branda1" , flavours : ["flav1" ,"flav2"] },
 
-		]
-	}
+		],
 
 
+		// load subviews
 
-		hs.breadcrums = {
-			stack : [],
-			render : function() {
+	*/
 
-			},
-			manage:  function($obj) {
+	window.hs = (typeof window.hs == "undefined" ) ? {} : window.hs;
+	
+	window.hs.log = (!(typeof window.hs.log == "undefined" )) ? window.hs.log : {
 
+		logging_enable : null,
+		error_enable : null,
+		warning_enable : null,
+
+		initilize : function($msg) {
+
+			if ( typeof localStorage == "undefined") {
+
+				window.hs.log.logging_enable = 1;
+				window.hs.log.error_enable = 1;
+				window.hs.log.warning_enable = 1;
+
+			} else {
+
+				var i = localStorage.getItem("hs_logging");
+				var e = localStorage.getItem("error_enable");
+				var w = localStorage.getItem("warning_enable");
+
+				window.hs.log.logging_enable 	= ( !i ) ? 0 : i;
+				window.hs.log.error_enable 		= ( !e ) ? 1 : e;
+				window.hs.log.warning_enable 	= ( !w ) ? 0 : w;
+				
+				if ( !l ) localStorage.setItem("hs_logging", window.hs.log.logging_enable );
+				if ( !e ) localStorage.setItem("hs_logging", window.hs.log.error_enable   );
+				if ( !w ) localStorage.setItem("hs_logging", window.hs.log.warning_enable );
+			}
+			
+		},
+		i: function($msg) {
+			var x = window.hs.log.logging_enable;
+			if ( typeof x == "null") window.hs.log.initilize();
+			if ( x ) {
+				console.log($msg)
+			}
+		},
+		e: function($msg) {
+			var x = window.hs.log.error_enable;
+			if ( typeof x == "null") window.hs.log.initilize();
+			if ( x ) {
+				console.error($msg)
+			}
+		},
+		w: function($msg) {
+			var x = window.hs.log.warning_enable;
+			if ( typeof x == "null") window.hs.log.initilize();
+			if ( x ) {
+				console.warn($msg)
+			}
+		},
+	} ;
+
+	hs.mvc = (function(){
+
+		var initial_error_status = 0;
+		var error = [];
+		$dependencies = ["jQuery"];
+		for (var i = 0; i < $dependencies.length; i++) {
+			d= $dependencies[i]
+			if ( typeof window[d] == "undefined" ) {
+				initial_error_status = 1;
+				error[error.length] = d + " is required ! ";
 			}
 		}
-		hs.templateEngin = {};
-		hs.templateEngin.renderStr = function($t, $data ) {
-			//$t = $("#" + $template);
-			$.each( $data , function(k,v) {
-				
+		
+		if (initial_error_status) {
+			function error_construct ($d) {
+				hs.log.e({"error" :error});
+				return {};
+			};
+			return error_construct
+		}
+		
+		window.hs.$  = (typeof window.hs.$ == "undefined" ) ? window.jQuery : window.hs.$;
 
-				if ($t.find("[data-" + k + "]").length) {
+		var private_data = {
+			_data :{},
+			settings : {},
+			models_data : {},
+		}
+		var abstractControllers = {};
+		var controllers = {};
 
-					$templatemod = ( typeof $t.find("[data-" + k + "]").attr("data-templatingMode") != "undefined" ) ? $t.find("[data-" + k + "]").attr("data-templatingMode") : "insert";
-					switch( $templatemod ) {
-						case "insert": 
-							$t.find("[data-" + k + "]").html(v)
-						break;
-						case "append": 
-							$t.find("[data-" + k + "]").append(v)
-						break;
+		var models = {};
+		var data_providers = {};
 
+		/*
+
+			view function
+				put data value
+
+
+		*/
+		templateEngin = {
+			identifiers : {
+				attribute: /(\ *data-mvc_[a-zA-Z_]+\ *=\"[^"]+\")|(\ *data-mvc_[a-zA-Z_]+\ *=\'[^"]+\')|(\ *data-mvc_[a-zA-Z_]+)/gm,
+				dataTag : /\{\!\{[a-zA-Z_]+\}\}/gm,
+				tag : /\{\!\{[a-zA-Z_]+((\ +[a-zA-Z_]+=[a-zA-Z_]+)|(\ +[a-zA-Z_]+='[a-zA-Z_]*')|(\ +[a-zA-Z_]+="[a-zA-Z_]*")|(\ +[a-zA-Z_]+))*\ *\}\}/gm,
+				all_elem : /(\{\!\{[a-zA-Z_]+((\ +[a-zA-Z_]+=[a-zA-Z_]+)|(\ +[a-zA-Z_]+='[a-zA-Z_]*')|(\ +[a-zA-Z_]+="[a-zA-Z_]*")|(\ +[a-zA-Z_]+))*\ *\}\})|(\ *data-mvc_[a-zA-Z_]+\ *=\"[^"]+\")|(\ *data-mvc_[a-zA-Z_]+\ *=\'[^"]+\')|(\ *data-mvc_[a-zA-Z_]+)/gm,
+			},
+			
+
+			parsedValue: function($exp_str , $dataSet, $preval) {
+
+				$preval = (typeof $preval == "undefined") ? "" : $preval;
+				$.each( $dataSet , function(k,v) {
+					
+					if ( typeof v == "object") {
+						$exp_str = templateEngin.parsedValue($exp_str , v ,$preval + k + "." )
+					} else {
+						$reg = new RegExp('{!{'+ $preval + k+'}}', 'gm');
+						$exp_str = $exp_str.replace( $reg , v);	
 					}
+					
+				})
+				return $exp_str;
+			},
+
+			loadSubViews : function($obj,$data){
+				// find all subviews and add values
+				$obj.find("[data-mvc_load]").each(function() {
+					
+					viewName = $(this).attr("data-mvc_load");
+					viewName = templateEngin.parsedValue(viewName , $data);
+					
+					$(this).removeAttr("data-mvc_load").attr("data-mvc_loaded" , viewName )
+					$(this).html( $("#" + viewName ).html() );
+				});
+				if ( $obj.find("[data-mvc_load]").length ) {
+					$obj = templateEngin.loadSubViews($obj , $data)
 				}
 
-			});
-			$reg = /{!{[A-za-z1-9_]*( [A-za-z1-9_]*="[a-z1-9A-Z_'-]*")*}}/gm;
+				return $obj;
 			
-			$html = $t[0].outerHTML;
+			},
 
-			$.each( $data , function(k,v) {
+			parseIterator: function($obj,$data) {
+
+				$obj.find("[data-mvc_loop]").each(function() {
+					elm = $(this);
+					
+					$dataSetName = elm.attr("data-mvc_loop");
+					$templateName = elm.attr("data-mvc_loop_template");
+
+					
+					$templageObj = $("#"+ $templateName);
+					
+
+					if ( !$templageObj.length ) return
+
+					$.each( $data[$dataSetName] , function (k,_data) {
+						$template_clone_str = templateEngin.getHtmlStr($templageObj)
+						$child_html = templateEngin.parsedValue($template_clone_str , _data);
+						elm.append($child_html);
+					});
+
+					$(this).removeAttr("data-mvc_loop").attr("data-mvc_loaded" , $dataSetName )
+				});
+
+				return $obj;
 			
-				$reg = new RegExp('{!{'+k+'( [A-za-z1-9_]*="[a-z1-9A-Z_\'-]*")*}}', 'gm');
-				$reg = new RegExp('{!{'+k+'}}', 'gm');
+			},
 
-				// not processing any attrs
+			
+			functionSet : {
+				mvc_loop : function(attr,$data) {
+					passData =  ( typeof attr.data != "undefined" && typeof $data[attr.data] != "undefined" ) ? $data[attr.data] : $data
+					attr.template
+					console.log(attr)
+					$html = "";
+					return $html;
+				}
+			},
+			parseFunctions: function($obj,$data) {
+				$str = templateEngin.getHtmlStr($obj);
+				while( (result = templateEngin.identifiers.tag.exec($str) ) !== null) {
+					console.log(result)
+					raw_str =  result[0].substr(3);
+					raw_str = raw_str.substr(0,raw_str.length-2);
+					raw_str = raw_str.trim();
 
-				$html = $html.replace( $reg , v);
+					actionName = raw_str.split(" ")[0];
+					actionName = actionName.toLowerCase();
 
-				// set = $reg2.exec($html);
-				// for (var i = 0; i < set.length; i++) {
-				// 	if (set[i] != "undefined") {
-				// 		set[i]
-				// 	}
-				// }
+					if ( actionName.substr(0,3) != "mvc" ) continue;
 
+					raw_str = raw_str.replace(actionName, "");
+					attributes = templateEngin.parser.__parseAttribute(raw_str)
+					
+					if ( typeof templateEngin.functionSet[actionName] != "undefined") {
+						$html = templateEngin.functionSet[actionName].call(attributes,$data );
+						startindex = result.index
+						endIndex = result.index + result[0].length;
+						$str = $str.substr(0,startindex) + $html + $str.substr(endIndex+1)
+					}
+				    console.log(actionName,attributes)
+				}
+				return $($str);
+			},
+			getTemplateObject : function($n) {
+				$str = $("#" + $n).html();
+				return $($str);
 
-			})
+			},
+			getHtmlStr : function($n) {
+				if ( $n.length )
+				return $n[0].outerHTML;
 
-			return $html;
-		}
-		hs.templateEngin.getTemplateObject = function($n) {
-			$str = $("#" + $n).html();
-			return $($str);
+			},
+			isAttribute: function() {
 
-		}
-		hs.templateEngin.render = function ($template, $data ) {
+			},
+			getObjectType: function(result,data) {
 
-			$str = hs.templateEngin.renderStr($template, $data);
-			$("#innerContent").html($str);
-		}
+			},
+			parser : {
+				// recognize the object as
+				recognizeObject: function(str) {
+					for (var key in  templateEngin.identifiers) {
+					    if ( templateEngin.identifiers.hasOwnProperty(key)) {
+					    	var result = str.match(templateEngin.identifiers[key]);
+					    	if ( null != result ) {
+					    		return key;
+					    	}
+					        
+					    }
+					}
+					
+				},
+				dataTag: function(exp_str,data) {
 
-		
-		
-		hs.controllers = {};
-		hs.registorController = function($c , $d) {
-			// check if contoller exist;
-			if ( typeof hs.controllers[ $c ] != "undefined" ) {
-				console.log("contoller already exist ! updating contoller");
+					v = exp_str.substr(3);
+					v = v.substr(0,v.length-2);
+					if ( typeof data[v] != "undefined" && typeof data[v] != "object" ) {
+
+						exp_str.replace( templateEngin.identifiers.attribute , data[v]);		
+					}
+					
+				},
+				attribute: function(str,data) {
+					var spacer = /\ *\=\ */gm;
+					var str = str.replace(spacer, "=");
+					var set = str.split("=");
+					
+					var key = set[0];
+					key = key.trim();
+					if ( key.indexOf("data-") == 0) {
+						key = key.substr(5)
+					}
+
+					var value = true;
+					if ( set.length < 1 ) {
+						value = set[1];
+						if ( ['"',"'"].indexOf( value[0] ) != -1 ) {
+							value = value.substr(1);
+						}
+						if ( ['"',"'"].indexOf( value[value.length-1] ) != -1 ) {
+							value = value.substr(0,value.length-1);
+						}
+					}
+					for (var i = 0; i < set.length; i++) {
+
+					}
+					// get value
+					// if tag, pull from data
+				},
+				_parseTagAttribute: function(str) {
+					spacer = /\ *\=\ */gm;
+					str = str.replace(spacer, "=");
+					set = str.split(" ");
+					attrSet = {};
+					for (var i = 0; i < set.length; i++) {
+						attr = set[i];
+						if ( attr.length == 0) continue;
+						if ( attr.indexOf("=") == -1 ) {
+							attrSet[attr] = 1;
+						} else {
+							attr = attr.split("=");
+
+							key = attr[0];
+							value =  attr[1];
+
+							if ( ['"',"'"].indexOf( value[0] ) != -1 ) {
+								value = value.substr(1);
+							}
+							if ( ['"',"'"].indexOf( value[value.length-1] ) != -1 ) {
+								value = value.substr(0,value.length-1);
+							}
+							attrSet[key] = value;
+						}
+					}
+					return attrSet;
+				
+				},
+				tag: function(exp_str,data) {
+					raw_str =  exp_str.substr(3);
+					raw_str = raw_str.substr(0,raw_str.length-2);
+					raw_str = raw_str.trim();
+
+					actionName = raw_str.split(" ")[0];
+					actionName = actionName.toLowerCase();
+					console.log(actionName)
+					if ( actionName.substr(0,3) != "mvc" ) continue;
+
+					raw_str = raw_str.replace(actionName, "");
+					attributes = templateEngin._parseTagAttribute(raw_str)
+					
+					if ( typeof templateEngin.functionSet[actionName] != "undefined") {
+						$html = templateEngin.functionSet[actionName].call(attributes,$data );
+						startindex = result.index
+						endIndex = result.index + result[0].length;
+						$str = $str.substr(0,startindex) + $html + $str.substr(endIndex+1)
+					}
+				},
+
+			},
+			/*
+				understant the element
+				if its data 
+			*/
+			parse: function(obj , data) {
+
+				$str = templateEngin.getHtmlStr(obj);
+				counter = 0;
+				while( (resultSet = templateEngin.identifiers.all_elem.exec($str) ) !== null) {
+					
+					result = resultSet[0].trim();
+					console.log(result)
+					switch ( templateEngin.parser.recognizeObject(result,data) ) {
+						case "attribute":
+							parsedValue = templateEngin.parser.attribute(result,data);
+						break;
+						case "tag":
+							parsedValue = templateEngin.parser.tag(result,data);
+						break;
+						case "dataTag":
+							parsedValue = templateEngin.parser.dataTag(result,data);
+						break;
+					}
+					//parsedValue.action
+					// raw_str =  result[0].substr(3);
+					// raw_str = raw_str.substr(0,raw_str.length-2);
+					// raw_str = raw_str.trim();
+
+					// actionName = raw_str.split(" ")[0];
+					// actionName = actionName.toLowerCase();
+
+					// if ( actionName.substr(0,3) != "mvc" ) continue;
+
+					// raw_str = raw_str.replace(actionName, "");
+					// attributes = templateEngin.parseAttribute(raw_str)
+					
+					// if ( typeof templateEngin.functionSet[actionName] != "undefined") {
+					// 	$html = templateEngin.functionSet[actionName].call(attributes,$data );
+					// 	startindex = result.index
+					// 	endIndex = result.index + result[0].length;
+					// 	$str = $str.substr(0,startindex) + $html + $str.substr(endIndex+1)
+					// }
+				 //    console.log(actionName,attributes)
+				}
+				return $($str);
 			}
-			hs.controllers[ $c ] = {
-				template : $d.template,
-				data : $d.data,
-				beforeAdapt : $d.beforeAdapt,
-				stackLevel : $d.stackLevel
-			}
-		};
-		hs.deafultController = function( $contollerName ) {
-			hs.deafultControllerName = $contollerName;
+			
+
 		}
-		hs.controllerCall = function($controller , $prams) {
-			if ( typeof hs.controllers[$controller] == "undefined" ) {
-				console.log("no controller exist");
+		/* private functions */
+		function _callController($controller, $is_abstract = 0, $prams) {
+
+			controllerSet =  ( $is_abstract == 0 ) ? controllers : abstractControllers;
+
+			if ( typeof controllerSet[$controller] == "undefined" ) { 
+				return {}
 			} else {
-				// get controller
-				$cc = hs.controllers[$controller] ;
-				// get template
-				$template = hs.templateEngin.getTemplateObject($cc.template);
-				// call adaptor before templating
-				adaptedData = $cc.beforeAdapt($template , $cc.data,  $prams  );
-				// adapt template 
-				hs.templateEngin.render(adaptedData.template,adaptedData.data );
+				var _c = controllerSet[$controller];
+
+				if ( typeof _c.call != "undefined" ) {
+
+					return _c.call();
+
+				} else {
+				
+					data = ( _c.extends ) ? _callController( _c.extends, 1 )  : {};
+					data =  _c.init(data, $prams);
+					return data;
+				}
+				
 			}
 		}
-		$(document).ready(function(){
+		function callAbstractContoller( $name  ) {
+			return _callController($name , 1)
+		}
+		function callController ($name , $prams ) {
+			return _callController($name , 0, $prams)
+		};
+		
 
-			hs.controllerCall(hs.deafultControllerName);
+		/* public function */
+		var functions = {
 
+			register : {
+				contorller : function($c , $d , type = 1) {
+
+					var con = (type) ? controllers : abstractControllers
+					// check if contoller exist;
+					if ( typeof con[ $c ] != "undefined" ) {
+
+						hs.log.i("contoller already exist !");
+					
+					} else {
+
+						con[ $c ] = {
+							extends 		: null,
+							init 			: null,
+							after_render 	: null,
+						}
+						if ( !typeof $d.call == "undefined" ) {
+							
+							con.init = $d;
+
+						} else {
+							if (!( typeof $d.extends == "undefined" ||  $d.extends.length == 0 )) {
+								
+								if ( typeof abstractControllers[$d.extends]  == "undefined" ) {
+									hs.log.i("undefined abstractControllers exist!");
+								} else {
+									con[ $c ].extends 	= $d.extends
+								}
+							}
+
+							if ( typeof $d.init == "undefined" ||  typeof $d.init.call == "undefined" ) {
+								
+								hs.log.e("exit ! no controller init " );
+								delete con[ $c ];
+								return 0;
+
+							} else {
+								con[ $c ].init 	= $d.init
+								
+							}
+							
+							if (!( typeof $d.after_render == "undefined" ||  typeof $d.after_render.call == "undefined" )) {
+								
+								con[ $c ].after_render 	= $d.after_render
+								
+							}
+						}
+						
+						
+					}
+				},
+				controllerSet : function($set) {
+					ths = this
+
+					hs.$.each($set,function($k ,$v ) {
+						ths.contorller($k ,$v)
+					})
+				},
+				abstractControllerSet : function($set) {
+					ths = this
+
+					hs.$.each($set,function($k ,$v ) {
+						ths.contorller($k ,$v , 0)
+					})
+				},
+				abstractController : function($c , $d) {
+					this.contorller($c , $d, 0);
+
+				},
+				model : function($c , $d) {
+					// check if contoller exist;
+					if ( typeof models[ $c ] != "undefined" ) {
+						console.log("contoller already exist ! updating contoller");
+					} else {
+						models[ $c ] = $d
+					}
+				},
+				modelSet : function($set) {
+					ths = this
+					hs.$.each($set,function($k ,$v ) {
+						ths.model($k ,$v)
+					})
+				},
+
+
+			},
+			load : {
+				model : function($name = null,$alies = null) {
+					if ( !( $name &&  $name.length) ) return null
+					if ( typeof models[$name] == "undefined" ) return null;
+					return models[$name].call();
+				},
+				view: function(elem, data ) {
+
+					_e = $(private_data._data.baseView)
+					
+					obj = $( $("#"+elem).html() );
+
+					templateEngin.parse(obj,data);
+					// get all sub views
+					obj = templateEngin.loadSubViews(obj, data );
+
+					// loop over functions
+					//obj = templateEngin.parseFunctions(obj, data );
+
+					
+					obj = $('<div>').append(obj);
+
+					$str = obj.html();
+					$str = templateEngin.parsedValue($str ,data  );
+
+					_e.html($str)
+					
+				}
+			},
+			setDeafultController : function($controller) {
+				if ( $controller && $controller.length ) {
+					private_data._data.deafultController = $controller;	
+				}
+				
+			},
+			setBaseView : function(baseview) {
+				if ( baseview && baseview.length ) {
+					private_data._data.baseView = baseview;	
+				}
+				
+			},
+			getBaseView: function() {
+				
+				return private_data._data.baseView;
+			},
+			getDeafultController : function() {
+				return private_data._data.deafultController;
+			},
+			
+			init : function () {
+				callController( private_data._data.deafultController  );
+			},
+			/* remove later */
+			getEverything : function() {
+				console.log(private_data);
+				console.log(abstractControllers);
+				console.log(controllers);
+				console.log(models);
+				console.log(data_providers);
+			}
+		}
+
+		function mvc($data) {
+			
+			functions.setDeafultController( $data.deafultController );
+			functions.setBaseView( $data.baseView );
+
+
+			$(document).on("click" , "[data-mvc_controller]", function () {
+
+				// running controller function
+				$controller = $(this).attr("data-mvc_controller");
+
+				if ( typeof controllers[$controller] == "undefined" ) {
+					console.log("no controller exist");
+					return 0;
+				}
+				
+				
+				// get parameters
+				$prams = {
+					attrs : {},
+				};
+				for(i = 0; i< this.attributes.length; i++) {
+					attr = this.attributes[i];
+					name = attr.name;
+					if ( name.indexOf("data-pram") != -1 ) {
+						name = name.replace("data-pram-","") 
+						$prams[name] = attr.value
+					} else {
+						$prams.attrs[name] = attr.value
+					}
+				  	
+				   	
+				}
+				// add class active 
+				$(".active_link").removeClass("active_link");
+				$(".active_same_controller").removeClass("active_same_controller");
+
+				callController($controller,$prams);
+				$selecter = "[data-mvc_controller='"+$controller+"']";
+
+				$($selecter).addClass("active_same_controller");
+
+				$.each($prams,function(k,v) {
+					if ( k != "attrs") {
+						$selecter += "[data-pram-"+k+"='"+v+"']"
+					}
+				})
+				console.log($selecter)
+				$($selecter).addClass("active_link");
+			});
+
+		}
+		hs.$.each(functions,function(k,v) {
+			mvc.prototype[k] = v;
 		})
 
-		$(document).on("click" , "[data-controller]", function () {
+		return mvc;
 
-			// running controller function
-			$controller = $(this).attr("data-controller");
-			if ( typeof hs.controllers[$controller] == "undefined" ) {
-				console.log("no controller exist");
-				return 0;
-			}
-			// add class active 
-			$(".active_link").removeClass("active_link");
-			$(this).addClass("active_link");
-			// get parameters
-			$prams = $(this).attr("data-controllerParameter");
-			hs.controllerCall($controller,$prams)
-		});
-
-		hs.helper = {
-			getElemType : function(e) {
-				var c = e.constructor.toString();
-				return c.substr(9 , c.indexOf("()") - 9).toLowerCase() ;
-			},
-		};
-		hs.model = {
-			getProduct : function(id) {
-				for (var i = 0; i < hs.data.allproducts.length; i++) {
-					if ( hs.data.allproducts[i].productid == id ) {
-						return hs.data.allproducts[i];
-					}
-				}
-				return undefined;
-			},
-			getBrand : function(id) {
-				for (var i = 0; i < hs.data.allbrands.brands.length; i++) {
-					if ( hs.data.allbrands.brands[i].brandid == id ) {
-						return hs.data.allbrands.brands[i];			
-					}
-				}
-				return undefined;
-				
-			},
-			getFlavour : function(id) {
-				for (var i = 0; i < hs.data.allflavours.flavours.length; i++) {
-					if ( hs.data.allflavours.flavours[i].flavourid == id ) {
-						return hs.data.allflavours.flavours[i];			
-					}
-				}
-				return undefined;
-			},
-			getBrandBy : function(entitiy,eVal ) {
-				$set = [];
-				for (var i = 0; i < hs.data.allbrands.brands.length; i++) {
-					$e =  hs.data.allbrands.brands[i][entitiy];
-					switch( hs.helper.getElemType($e) ) {
-						case "array": 
-							if (  $e.indexOf(eVal)  ) {
-								$set.push( $e )
-							}
-						break;
-						case "object": 
-							if (  typeof $e[eVal] != "undefined" || $e.equal(eVal)  ) {
-								$set.push( $e )
-							}
-						break;
-						default : 
-							if (  $e == eVal  ) {
-								$set.push( $e )
-							}
-						break;
-					}
-				}
-				return $set;
-				
-			},
-			getFlavourBy : function(entitiy,eVal ) {
-				$set = [];
-				for (var i = 0; i < hs.data.allflavours.flavours.length; i++) {
-
-					$e =  hs.data.allflavours.flavours[i][entitiy];
-					switch( hs.helper.getElemType($e) ) {
-						case "array": 
-							if (  $e.indexOf(eVal)  ) {
-								$set.push( $e )
-							}
-						break;
-						case "object": 
-							if (  typeof $e[eVal] != "undefined" || $e.equal(eVal)  ) {
-								$set.push( $e )
-							}
-						break;
-						default : 
-							if (  $e == eVal  ) {
-								$set.push( $e )
-							}
-						break;
-					}
-				}
-				return $set;
-			},
-			getProductBy : function(entitiy,eVal ) {
-				$set = [];
-				for (var i = 0; i < hs.data.allproducts.length; i++) {
-					$e = hs.data.allproducts[i][entitiy];
-					switch( hs.helper.getElemType($e) ) {
-						case "array": 
-							if (  $e.indexOf(eVal)  ) {
-								$set.push( $e )
-							}
-						break;
-						case "object": 
-							if (  typeof $e[eVal] != "undefined" || $e.equal(eVal)  ) {
-								$set.push( $e )
-							}
-						break;
-						default : 
-							if (  $e == eVal  ) {
-								$set.push( $e )
-							}
-						break;
-					}
-					
-				}
-				return $set;
-			},
+	}());
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	var my_mvc = new hs.mvc({
+		deafultController: "allflavours",
+		baseView : "#my_mvc",
+	});
+	my_mvc.register.modelSet({
+		allflavours : function() {
+			return [
+				{name : "Flavour a", key:"flav1",flavourid: 21,productSet: [1,2,3,4,5,6], background: "",},
+				{name : "Flavour b", key:"flav2",flavourid: 21,productSet: [1,2,3,4,5,6], background: "",},
+				{name : "Flavour c", key:"flav3",flavourid: 21,productSet: [1,2,3,4,5,6], background: "",},
+				{name : "Flavour j", key:"flav4",flavourid: 21,productSet: [1,2,3,4,5,6], background: "",},
+				{name : "Flavour i", key:"flav5",flavourid: 21,productSet: [1,2,3,4,5,6], background: "",},
+			]
+			
 		}
+	});
 
 
+	my_mvc.register.abstractControllerSet({
+		base_contoller : function() {
+			data = {};
+			return data;
+		},
+	})
+	my_mvc.register.controllerSet({
 
+		allbrands: {
+			extends : "base_contoller",
+			init : function (data,$prams) {
 
-
-
-
-
-
-
-
-
-
-
-
-
-		// templating function
-
-		hs.registorController("allbrands", {
-			template : "allbrands_template",
-			data : hs.data.allbrands ,
-			stackLevel : 1,
-			beforeAdapt : function(template , data, prams) {
-			
-				ssstr = "";
-				$.each(data.brands , function(k,v) {
-					$tem = hs.templateEngin.getTemplateObject("brandthumbnail_template");
-					s = hs.templateEngin.renderStr($tem , v);
-					ssstr += s;
-
-					
-				});
-				data.allbrands = ssstr;
-
-				return {
-					template:template,
-					data:data,
-					prams:prams
-				}
+				data.some_elem = my_mvc.load.model();
+				data.content = "allbrands_template"
+				my_mvc.load.view( "baseview" , data);
 			},
-		});
+			after_render: function() {
 
-		// templating function
-		hs.registorController("allflavours", {
-			template : "allflavours_template",
-			data : hs.data.allflavours ,
-			stackLevel : 1,
-			beforeAdapt : function(template , data, prams) {
-				ssstr = "";
-				$.each(data.flavours , function(k,v) {
-					$tem = hs.templateEngin.getTemplateObject("flavourthumbnail_template");
-					s = hs.templateEngin.renderStr($tem , v);
-					ssstr += s;
-
-					
-				});
-				data.allflavours = ssstr;
-				return {
-					template:template,
-					data:data,
-					prams:prams
-				}
 			},
-		});
-		hs.deafultController("allflavours");
 
-		// templating function
-		hs.registorController("brand", {
-			template : "brand_template",
-			stackLevel : 2,
-			data : hs.data.allbrands ,
-			beforeAdapt : function(template , data, prams) {
-				
-				$current_brand = hs.model.getBrand(prams)
-				
+		},
+		allflavours: {
+			extends : "base_contoller",
+			init : function (data,$prams) {
 
-				data["name"] = $current_brand.name;
-				strss = "";
-				for (var i = 0; i < $current_brand.productSet.length; i++) {
-
-					var pid = $current_brand.productSet[i];
-					var p = hs.model.getProduct(pid);
-					
-					$tem = hs.templateEngin.getTemplateObject("product_grid_template");
-					s = hs.templateEngin.renderStr($tem , p);
-					strss += s;
-
-				}
-				
-
-				data["product_list"] = strss;
-				return {
-					template:template,
-					data:data,
-					prams:prams
-				}
+				data.allflavours = my_mvc.load.model("allflavours");
+				data.heading = my_mvc.load.model("config");
+				data.content = "allflavours_template"
+				my_mvc.load.view( "baseview" , data);
 			},
-		});
-		// templating function
-		hs.registorController("flavour", {
-			template : "flavour_template",
-			stackLevel : 2,
-			data : hs.data.allflavours ,
-			beforeAdapt : function(template , data, prams) {
-			
-				$current_flavour = hs.model.getFlavour(prams)
-				
+			after_render: function() {
 
-				data["name"] = $current_flavour.name;
-				strss = "";
-				for (var i = 0; i < $current_flavour.productSet.length; i++) {
-
-					var pid = $current_flavour.productSet[i];
-					var p = hs.model.getProduct(pid);
-					
-					$tem = hs.templateEngin.getTemplateObject("product_grid_template");
-					s = hs.templateEngin.renderStr($tem , p);
-					strss += s;
-
-				}
-				
-
-				data["product_list"] = strss;
-				return {
-					template:template,
-					data:data,
-					prams:prams
-				}
 			},
-		});
-		// templating function
-		hs.registorController("product", {
-			template : "product_template",
-			stackLevel : 3,
-			data : hs.data.products ,
-			beforeAdapt : function(template , data, prams) {
-				
-				$current_product = hs.model.getProduct(prams);
 
-				data = $current_product
-				return {
-					template:template,
-					data:data,
-					prams:prams
-				}
+		},
+		brand: {
+			extends : "base_contoller",
+			init : function (data,$prams) {
+
+				data.some_elem = my_mvc.load.model();
+				data.content = "brand_template"
+
+				my_mvc.load.view( "baseview" , data);
 			},
-		});
-		
+			after_render: function() {
+
+			},
+
+		},
+		flavour: {
+			extends : "base_contoller",
+			init : function (data,$prams) {
+
+				data.some_elem = my_mvc.load.model();
+				data.content = "flavour_template"
+				my_mvc.load.view( "baseview" , data);
+			},
+			after_render: function() {
+
+			},
+
+		},
+		product: {
+			extends : "base_contoller",
+			init : function ($data,$prams) {
+
+				data.some_elem = my_mvc.load.model();
+				data.content = "product_template"
+				my_mvc.load.view( "baseview" , data);
+			},
+			after_render: function() {
+
+			},
+
+		},
+		settings: {
+			extends : "base_contoller",
+			init : function ($data,$prams) {
+
+				data.some_elem = my_mvc.load.model();
+				data.content = "settings_template";
+
+				var subview = ( typeof $prams.subview == "undefined" ) ? "general" : $prams.subview 
+				data.subview = "settings_" + subview + "_template";
+
+				my_mvc.load.view( "baseview" , data);
+			},
+			after_render: function() {
+
+			},
+		}
+	});
+
+
+	$(document).ready(function(){
+		my_mvc.init();	
+	})
+	
+/*
 
 
 
 
+*/
 	</script>
+
+
 	<div id="content-wraper">
 		<header>
 			<div class="action-btn"></div>
@@ -451,16 +832,10 @@
 				<img src="imgs/logo.png">
 			</div>
 		</header>
-		<div id="innerContent"></div>
-		<div id="footer">
-			<div class="buttons-toogle">
-				<span data-controller="allflavours" class="">Fruits</span>
-				<span data-controller="allbrands" class="">Brands</span>
-			</div>
-			<div class="breadcrums"></div>
-			<div class="menu"></div>
-
+		<div id="my_mvc">
+			
 		</div>
+		
 	</div>
 
 
@@ -471,20 +846,51 @@
 
 
 	<div class="hide templates_container">
+		<div id="baseview">
+			<div id="innerContent">
+				<div class="view" data-mvc_load="{!{content}}"></div>
+				<div data-mvc_controller="brand" data-pram-brandid="{!{brandid}}">
+
+			</div>
+			</div>
+			<div id="footer">
+				<div class="buttons-toogle">
+					<span data-mvc_controller="allflavours" class="">Fruits</span>
+					<span data-mvc_controller="allbrands" class="">Brands</span>
+				</div>
+				<div class="breadcrums"></div>
+				<div data-mvc_controller="settings" data-pram-subview="general" class="menu"></div>
+			</div>
+		</div>
 
 		<div id="allbrands_template">
 			<div class="template allbrands"  >
-				<div class="big"><h2 data-heading></h2><p data-para></p></div>{!{allbrands}}
+				<div class="big">
+					<h2 >{!{heading}}</h2>
+					<p>{!{para}}</p>
+				</div>
+				{!{allbrands}}
 			</div>
 		</div>
+
 		<div id="allflavours_template">
 			<div class="template allflavours">
-				<div class="big"><h2 data-heading></h2><p data-para></p></div>{!{allflavours}}
+				<div class="big">
+					<h2>{!{heading}}</h2>
+					<p>{!{para}}</p>
+				</div>
+
+				{!{mvc_loop data="allflavours" template="flavourthumbnail_template"}}
+
+
+
+
+				<div data-mvc_loop="allflavours" data-mvc_loop_template="flavourthumbnail_template"></div>
 			</div>
 		</div>
 
 		<div id="brandthumbnail_template">
-			<div data-controller="brand" data-controllerParameter="{!{brandid}}">
+			<div data-mvc_controller="brand" data-pram-brandid="{!{brandid}}">
 				<div class="inner-image-container" >
 					<img src="{!{logo}}" />
 					<p>{!{name}}</p>
@@ -492,7 +898,7 @@
 			</div>
 		</div>
 		<div id="flavourthumbnail_template">
-			<div data-controller="flavour" data-controllerParameter="{!{flavourid}}">
+			<div data-mvc_controller="flavour" data-pram-flavourid="{!{flavourid}}">
 				<div class="inner-image-container" >
 					<img src="{!{logo}}" />
 					<p>{!{name}}</p>
@@ -516,11 +922,12 @@
 		
 		<div id="product_grid_template">
 
-			<div data-controller="product" data-controllerParameter="{!{productid}}">
+			<div data-mvc_controller="product" data-pram-x="{!{productid}}" data-pram-y="{!{productid}}" data-pram-z="{!{productid}}" >
 				<img src="{!{image}}">
 				<h3>{!{name}}</h3>
 			</div>
 		</div>
+
 		<div id="product_template">
 			<div class="c-c c-w5">
 				<div>
@@ -532,6 +939,35 @@
 				</div>
 			</div>
 		</div>
+
+		<div id="settings_template">
+			<div class="c-c setting-template">
+
+				<div class="s2 setting-sidebar">
+					<ul>
+						<li data-mvc_controller="settings" data-pram-subview="general">General </li>
+						<li data-mvc_controller="settings" data-pram-subview="reindex"> re-index data </li>
+						<li data-mvc_controller="settings" data-pram-subview="about"> about </li>
+					</ul>
+				</div><!-- 
+				 --><div  data-mvc_load="{!{subview}}" class="s8 setting-subview" >
+						
+				</div>
+
+				
+			</div>
+		</div>
+
+		<div id="settings_general_template">
+			general page
+		</div>
+		<div id="settings_reindex_template">
+			reindex page
+		</div>
+		<div id="settings_about_template">
+			about page
+		</div>
+
 	</div>
 
 </body>
