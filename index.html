@@ -158,52 +158,21 @@
 
 		*/
 		templateEngin = {
+
 			identifiers : {
-				attribute: /(\ *data-mvc_[a-zA-Z_]+\ *=\"[^"]+\")|(\ *data-mvc_[a-zA-Z_]+\ *=\'[^"]+\')|(\ *data-mvc_[a-zA-Z_]+)/gm,
-				dataTag : /\{\!\{[a-zA-Z_]+\}\}/gm,
-				tag : /\{\!\{[a-zA-Z_]+((\ +[a-zA-Z_]+=[a-zA-Z_]+)|(\ +[a-zA-Z_]+='[a-zA-Z_]*')|(\ +[a-zA-Z_]+="[a-zA-Z_]*")|(\ +[a-zA-Z_]+))*\ *\}\}/gm,
-				all_elem : /(\{\!\{[a-zA-Z_]+((\ +[a-zA-Z_]+=[a-zA-Z_]+)|(\ +[a-zA-Z_]+='[a-zA-Z_]*')|(\ +[a-zA-Z_]+="[a-zA-Z_]*")|(\ +[a-zA-Z_]+))*\ *\}\})|(\ *data-mvc_[a-zA-Z_]+\ *=\"[^"]+\")|(\ *data-mvc_[a-zA-Z_]+\ *=\'[^"]+\')|(\ *data-mvc_[a-zA-Z_]+)/gm,
+				dataTag : /\{\!\{[a-zA-Z_.]+\}\}/gm,
+				tag : /\{\!\{[a-zA-Z_]+((\ +[a-zA-Z_]+=[^ '"]+)|(\ +[a-zA-Z_]+='[^']*')|(\ +[a-zA-Z_]+="[^"]*")|(\ +[a-zA-Z_]+))*\ *\}\}/gm,
+				all_elem : /\{\!\{[a-zA-Z_]+((\ +[a-zA-Z_]+=[^ '"]+)|(\ +[a-zA-Z_]+='[^']*')|(\ +[a-zA-Z_]+="[^"]*")|(\ +[a-zA-Z_]+))*\ *\}\}/gm,
 			},
-			
-
-			parsedValue: function($exp_str , $dataSet, $preval) {
-
-				$preval = (typeof $preval == "undefined") ? "" : $preval;
-				$.each( $dataSet , function(k,v) {
-					
-					if ( typeof v == "object") {
-						$exp_str = templateEngin.parsedValue($exp_str , v ,$preval + k + "." )
-					} else {
-						$reg = new RegExp('{!{'+ $preval + k+'}}', 'gm');
-						$exp_str = $exp_str.replace( $reg , v);	
-					}
-					
-				})
-				return $exp_str;
+			exect_match : {
+				dataTag : /^\{\!\{[a-zA-Z_.]+\}\}$/gm,
+				tag : /^\{\!\{[a-zA-Z_]+((\ +[a-zA-Z_]+=[^ '"]+)|(\ +[a-zA-Z_]+='[^']*')|(\ +[a-zA-Z_]+="[^"]*")|(\ +[a-zA-Z_]+))*\ *\}\}$/gm,
 			},
-
-			loadSubViews : function($obj,$data){
-				// find all subviews and add values
-				$obj.find("[data-mvc_load]").each(function() {
-					
-					viewName = $(this).attr("data-mvc_load");
-					viewName = templateEngin.parsedValue(viewName , $data);
-					
-					$(this).removeAttr("data-mvc_load").attr("data-mvc_loaded" , viewName )
-					$(this).html( $("#" + viewName ).html() );
-				});
-				if ( $obj.find("[data-mvc_load]").length ) {
-					$obj = templateEngin.loadSubViews($obj , $data)
-				}
-
-				return $obj;
-			
-			},
+		
 			parseIterator: function($obj,$data) {
 
 				$obj.find("[data-mvc_loop]").each(function() {
 					elm = $(this);
-					
 					$dataSetName = elm.attr("data-mvc_loop");
 					$templateName = elm.attr("data-mvc_loop_template");
 
@@ -215,7 +184,7 @@
 
 					$.each( $data[$dataSetName] , function (k,_data) {
 						$template_clone_str = templateEngin.getHtmlStr($templageObj)
-						$child_html = templateEngin.parsedValue($template_clone_str , _data);
+						$child_html = templateEngin.parser.parseString($template_clone_str , _data);
 						elm.append($child_html);
 					});
 
@@ -229,107 +198,108 @@
 			
 			functionSet : {
 				mvc_loop : function(attr,$data) {
-					passData =  ( typeof attr.data != "undefined" && typeof $data[attr.data] != "undefined" ) ? $data[attr.data] : $data
-					attr.template
-					console.log(attr)
-					$html = "";
-					return $html;
-				}
-			},
-			parseFunctions: function($obj,$data) {
-				$str = templateEngin.getHtmlStr($obj);
-				while( (result = templateEngin.identifiers.tag.exec($str) ) !== null) {
-					console.log(result)
-					raw_str =  result[0].substr(3);
-					raw_str = raw_str.substr(0,raw_str.length-2);
-					raw_str = raw_str.trim();
-
-					actionName = raw_str.split(" ")[0];
-					actionName = actionName.toLowerCase();
-
-					if ( actionName.substr(0,3) != "mvc" ) continue;
-
-					raw_str = raw_str.replace(actionName, "");
-					attributes = templateEngin.parser.__parseAttribute(raw_str)
 					
-					if ( typeof templateEngin.functionSet[actionName] != "undefined") {
-						$html = templateEngin.functionSet[actionName].call(attributes,$data );
-						startindex = result.index
-						endIndex = result.index + result[0].length;
-						$str = $str.substr(0,startindex) + $html + $str.substr(endIndex+1)
+					var $html = "";
+					if ( typeof attr.data != "undefined" && typeof $data[attr.data] != "undefined" ) {
+						
+						$.each($data[attr.data], function(k,dd) {
+							var $obj = templateEngin.getTemplateObject(attr.template);
+							$obj = templateEngin.parse($obj,dd);
+							$html += templateEngin.getHtmlStr($obj)
+						});
 					}
-				    console.log(actionName,attributes)
+					
+					return $html;
+				},
+				mvc_load: function(attr,$data) {
+					
+
+					var passData =  ( typeof attr.data != "undefined" && typeof $data[attr.data] != "undefined" ) ? $data[attr.data] : $data
+
+					var $obj = templateEngin.getTemplateObject(attr.template);
+					
+					var $obj2 = templateEngin.parse($obj,passData);
+
+					
+					return templateEngin.getHtmlStr($obj2)
 				}
-				return $($str);
 			},
+			
 			getTemplateObject : function($n) {
 				$str = $("#" + $n).html();
+				if (!( /<[a-z][\s\S]*>/i.test( $str ) )) {
+					$str = '<div>' + $str + '</div>';
+				} 
 				return $($str);
 
 			},
 			getHtmlStr : function($n) {
-				if ( $n.length )
-				return $n[0].outerHTML;
-
-			},
-			isAttribute: function() {
-
-			},
-			getObjectType: function(result,data) {
+				
+				return $('<div>').append($n.clone()).html();
 
 			},
 			parser : {
-				// recognize the object as
+				// recognize the object as dataTag, tag, html attrbute
 				recognizeObject: function(str) {
-					for (var key in  templateEngin.identifiers) {
-					    if ( templateEngin.identifiers.hasOwnProperty(key)) {
-					    	var result = str.match(templateEngin.identifiers[key]);
-					    	if ( null != result ) {
+					for (var key in  templateEngin.exect_match) {
+					    if ( templateEngin.exect_match.hasOwnProperty(key)) {
+
+					    	templateEngin.exect_match[key].lastIndex = 0;
+					    	var result = templateEngin.exect_match[key].test(str) ;
+					    	
+					    	if ( result ) {
+					    		
 					    		return key;
 					    	}
-					        
 					    }
 					}
 					
 				},
-				dataTag: function(exp_str,data) {
+				// get string with dataTags and evaluate them
+				parseString: function($exp_str , $dataSet, $preval) {
 
+					$preval = (typeof $preval == "undefined") ? "" : $preval;
+					$.each( $dataSet , function(k,v) {
+						
+						if ( typeof v == "object") {
+							$exp_str = templateEngin.parser.parseString($exp_str , v ,$preval + k + "." )
+						} else {
+							$reg = new RegExp('{!{'+ $preval + k+'}}', 'gm');
+							$exp_str = $exp_str.replace( $reg , v);	
+						}
+						
+					})
+					return $exp_str;
+				},
+				// parse one dataTags
+				dataTag: function(exp_str,data) {
 					v = exp_str.substr(3);
 					v = v.substr(0,v.length-2);
-					if ( typeof data[v] != "undefined" && typeof data[v] != "object" ) {
-
-						exp_str.replace( templateEngin.identifiers.attribute , data[v]);		
-					}
-					
-				},
-				attribute: function(str,data) {
-					var spacer = /\ *\=\ */gm;
-					var str = str.replace(spacer, "=");
-					var set = str.split("=");
-					
-					var key = set[0];
-					key = key.trim();
-					if ( key.indexOf("data-") == 0) {
-						key = key.substr(5)
-					}
-
-					var value = true;
-					if ( set.length < 1 ) {
-						value = set[1];
-						if ( ['"',"'"].indexOf( value[0] ) != -1 ) {
-							value = value.substr(1);
+					if ( v.split(".").length > 1 ) {
+						ss = v.split(".");
+						tempObj = data;
+						for (var i = 0; i < ss.length; i++) {
+							
+							if (  typeof tempObj[ ss[i] ] != "undefined" ) {
+								tempObj = tempObj[ ss[i] ]
+							} else {
+								return exp_str;
+							}
 						}
-						if ( ['"',"'"].indexOf( value[value.length-1] ) != -1 ) {
-							value = value.substr(0,value.length-1);
+						exp_str = exp_str.replace( templateEngin.identifiers.dataTag , tempObj );
+					
+					} else {
+
+						if ( typeof data[v] != "undefined" && typeof data[v] != "object" ) {
+
+							exp_str = exp_str.replace( templateEngin.identifiers.dataTag , data[v]);		
 						}
 					}
-					for (var i = 0; i < set.length; i++) {
-
-					}
-					// get value
-					// if tag, pull from data
+					
+					return exp_str;
+					
 				},
-				_parseTagAttribute: function(str) {
+				_parseTagAttribute: function(str,data) {
 					spacer = /\ *\=\ */gm;
 					str = str.replace(spacer, "=");
 					set = str.split(" ");
@@ -351,31 +321,37 @@
 							if ( ['"',"'"].indexOf( value[value.length-1] ) != -1 ) {
 								value = value.substr(0,value.length-1);
 							}
-							attrSet[key] = value;
+
+							
+							attrSet[key] = templateEngin.parser.parseString(value,data ) ;
 						}
 					}
 					return attrSet;
 				
 				},
 				tag: function(exp_str,data) {
-					raw_str =  exp_str.substr(3);
+
+					var raw_str =  exp_str.substr(3);
 					raw_str = raw_str.substr(0,raw_str.length-2);
 					raw_str = raw_str.trim();
 
-					actionName = raw_str.split(" ")[0];
+					var actionName = raw_str.split(" ")[0];
 					actionName = actionName.toLowerCase();
-					console.log(actionName)
-					if ( actionName.substr(0,3) != "mvc" ) continue;
+
+					
+					if ( actionName.substr(0,3) != "mvc" ) return "";
+
 
 					raw_str = raw_str.replace(actionName, "");
-					attributes = templateEngin._parseTagAttribute(raw_str)
+					attributes = templateEngin.parser._parseTagAttribute(raw_str,data)
 					
+					var $return_str = "";
+
 					if ( typeof templateEngin.functionSet[actionName] != "undefined") {
-						$html = templateEngin.functionSet[actionName].call(attributes,$data );
-						startindex = result.index
-						endIndex = result.index + result[0].length;
-						$str = $str.substr(0,startindex) + $html + $str.substr(endIndex+1)
+						$return_str = templateEngin.functionSet[actionName](attributes,data );
+						
 					}
+					return $return_str;
 				},
 
 			},
@@ -385,43 +361,55 @@
 			*/
 			parse: function(obj , data) {
 
-				$str = templateEngin.getHtmlStr(obj);
+				var $str = templateEngin.getHtmlStr(obj);
+				
 				counter = 0;
-				while( (resultSet = templateEngin.identifiers.all_elem.exec($str) ) !== null) {
+				
+				$condition = 1;
+
+				while( $condition ) {
+
+					templateEngin.identifiers.all_elem.lastIndex = 0;
+					var resultSet = templateEngin.identifiers.all_elem.exec($str);
+
+					if ( !resultSet ) {
+						$condition = 0;
+						continue;
+					}
 					
-					result = resultSet[0].trim();
-					console.log(result)
-					switch ( templateEngin.parser.recognizeObject(result,data) ) {
-						case "attribute":
-							parsedValue = templateEngin.parser.attribute(result,data);
-						break;
+					var rr = resultSet;
+
+					var result = rr[0].trim();
+					
+					var text = "";
+
+					recognizeObject = templateEngin.parser.recognizeObject(result);
+
+					switch (recognizeObject) {
 						case "tag":
-							parsedValue = templateEngin.parser.tag(result,data);
+							text = templateEngin.parser.tag(result,data);
+							
 						break;
 						case "dataTag":
-							parsedValue = templateEngin.parser.dataTag(result,data);
+							text = templateEngin.parser.dataTag(result,data);
+							
 						break;
 					}
-					//parsedValue.action
-					// raw_str =  result[0].substr(3);
-					// raw_str = raw_str.substr(0,raw_str.length-2);
-					// raw_str = raw_str.trim();
-
-					// actionName = raw_str.split(" ")[0];
-					// actionName = actionName.toLowerCase();
-
-					// if ( actionName.substr(0,3) != "mvc" ) continue;
-
-					// raw_str = raw_str.replace(actionName, "");
-					// attributes = templateEngin.parseAttribute(raw_str)
 					
-					// if ( typeof templateEngin.functionSet[actionName] != "undefined") {
-					// 	$html = templateEngin.functionSet[actionName].call(attributes,$data );
-					// 	startindex = result.index
-					// 	endIndex = result.index + result[0].length;
-					// 	$str = $str.substr(0,startindex) + $html + $str.substr(endIndex+1)
-					// }
-				 //    console.log(actionName,attributes)
+					
+
+				
+					var startindex = rr.index
+					var endIndex = rr.index + rr[0].length;
+
+					
+					$str = $str.substr(0,startindex) + text + $str.substr(endIndex)
+					
+
+					counter++;
+					if ( counter > 100) break;
+					
+					
 				}
 				return $($str);
 			}
@@ -555,23 +543,18 @@
 					return models[$name].call();
 				},
 				view: function(elem, data ) {
-
+					
 					_e = $(private_data._data.baseView)
 					
 					obj = $( $("#"+elem).html() );
 
-					templateEngin.parse(obj,data);
-					// get all sub views
-					obj = templateEngin.loadSubViews(obj, data );
-
-					// loop over functions
-					//obj = templateEngin.parseFunctions(obj, data );
-
+					obj = templateEngin.parse(obj,data);
+					
+					
 					
 					obj = $('<div>').append(obj);
-
 					$str = obj.html();
-					$str = templateEngin.parsedValue($str ,data  );
+					//$str = templateEngin.parser.parseString($str ,data  );
 
 					_e.html($str)
 					
@@ -657,7 +640,6 @@
 						$selecter += "[data-pram-"+k+"='"+v+"']"
 					}
 				})
-				console.log($selecter)
 				$($selecter).addClass("active_link");
 			});
 
@@ -703,16 +685,20 @@
 		deafultController: "allflavours",
 		baseView : "#my_mvc",
 	});
+
 	my_mvc.register.modelSet({
 		allflavours : function() {
 			return [
-				{name : "Flavour a", key:"flav1",flavourid: 21,productSet: [1,2,3,4,5,6], background: "",},
-				{name : "Flavour b", key:"flav2",flavourid: 21,productSet: [1,2,3,4,5,6], background: "",},
-				{name : "Flavour c", key:"flav3",flavourid: 21,productSet: [1,2,3,4,5,6], background: "",},
-				{name : "Flavour j", key:"flav4",flavourid: 21,productSet: [1,2,3,4,5,6], background: "",},
-				{name : "Flavour i", key:"flav5",flavourid: 21,productSet: [1,2,3,4,5,6], background: "",},
+				{name : "Flavour a", key:"flav1",flavourid: 21,productSet: [1,2,3,4,5,6], background: "",logo: "imgs/icon.jpg",},
+				{name : "Flavour b", key:"flav2",flavourid: 22,productSet: [1,2,3,4,5,6], background: "",logo: "imgs/icon.jpg",},
+				{name : "Flavour c", key:"flav3",flavourid: 23,productSet: [1,2,3,4,5,6], background: "",logo: "imgs/icon.jpg",},
+				{name : "Flavour j", key:"flav4",flavourid: 24,productSet: [1,2,3,4,5,6], background: "",logo: "imgs/icon.jpg",},
+				{name : "Flavour i", key:"flav5",flavourid: 25,productSet: [1,2,3,4,5,6], background: "",logo: "imgs/icon.jpg",},
 			]
 			
+		},
+		config: function() {
+
 		}
 	});
 
@@ -743,7 +729,9 @@
 			init : function (data,$prams) {
 
 				data.allflavours = my_mvc.load.model("allflavours");
-				data.heading = my_mvc.load.model("config");
+				data.heading ="some heading";
+				data.para ="some para in details";
+
 				data.content = "allflavours_template"
 				my_mvc.load.view( "baseview" , data);
 			},
@@ -801,7 +789,7 @@
 
 				var subview = ( typeof $prams.subview == "undefined" ) ? "general" : $prams.subview 
 				data.subview = "settings_" + subview + "_template";
-
+				
 				my_mvc.load.view( "baseview" , data);
 			},
 			after_render: function() {
@@ -847,11 +835,11 @@
 	<div class="hide templates_container">
 		<div id="baseview">
 			<div id="innerContent">
-				<div class="view" data-mvc_load="{!{content}}"></div>
-				<div data-mvc_controller="brand" data-pram-brandid="{!{brandid}}">
-
+				<div class="view">
+					{!{mvc_load template='{!{content}}' }}
+				</div>
 			</div>
-			</div>
+			
 			<div id="footer">
 				<div class="buttons-toogle">
 					<span data-mvc_controller="allflavours" class="">Fruits</span>
@@ -868,10 +856,10 @@
 					<h2 >{!{heading}}</h2>
 					<p>{!{para}}</p>
 				</div>
-				{!{allbrands}}
+				{!{mvc_loop data="allbrands" template="brandthumbnail_template"}}
 			</div>
 		</div>
-
+		
 		<div id="allflavours_template">
 			<div class="template allflavours">
 				<div class="big">
@@ -881,10 +869,6 @@
 
 				{!{mvc_loop data="allflavours" template="flavourthumbnail_template"}}
 
-
-
-
-				<div data-mvc_loop="allflavours" data-mvc_loop_template="flavourthumbnail_template"></div>
 			</div>
 		</div>
 
@@ -949,8 +933,8 @@
 						<li data-mvc_controller="settings" data-pram-subview="about"> about </li>
 					</ul>
 				</div><!-- 
-				 --><div  data-mvc_load="{!{subview}}" class="s8 setting-subview" >
-						
+				 --><div  class="s8 setting-subview" >
+						{!{mvc_load template='{!{subview}}' }}
 				</div>
 
 				
