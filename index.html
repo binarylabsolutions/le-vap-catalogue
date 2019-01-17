@@ -9,8 +9,9 @@
 	
 	<script src="js/jquery-3.3.1.min.js"></script>
 	<script src="js/hs.js"></script>
+	<script src="js/dataProvider.js"></script>
 	<script src="js/app.js"></script>
-	
+
 	<script src="phonegap.js"></script>
 	
 </head>
@@ -29,13 +30,11 @@
 	<div id="content-wraper">
 		<header>
 			<div class="action-btn"></div>
-			<div class="logo" id="applogo">
+			<div class="logo" id="applogo" data-mvc_controller="allflavours">
 				<img src="imgs/logo.png">
 			</div>
 		</header>
-		<div id="my_mvc">
-			
-		</div>
+		<div id="my_mvc"></div>
 		
 	</div>
 
@@ -136,7 +135,13 @@
 				</div>
 			</div>
 		</div>
+		<div id="nodata_template">
 
+			<div class="nodata_template">
+				<h2>Connect to internet and download data</h2>
+				<button class="re-index-element"> reindex </button>
+			</div>
+		</div>
 		<div id="settings_template">
 			<div class="c-c setting-template">
 
@@ -159,7 +164,8 @@
 			general page
 		</div>
 		<div id="settings_reindex_template">
-			reindex page
+			<p>last reindex : {!{reindex}}</p>
+			<button class="re-index-element"> reindex </button>
 		</div>
 		<div id="settings_about_template">
 			about page
