@@ -129,6 +129,7 @@ my_mvc.register.controllerSet({
 		after_render: function() {
 			
 			$(".re-index-element").click(function() {
+				window.hs.appDataProvider.downloadData();
 				// download all brands
 				
 				// download all flavours
