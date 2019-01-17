@@ -10,6 +10,7 @@ window.hs.appDataProvider = (function () {
 			return 0;
 		},
 		downloadData: function() {
+			
 			if ( typeof FileTransfer == "undefined" ) {
 				alert(" FileTransfer undefined ")
 			}
