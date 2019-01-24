@@ -234,6 +234,7 @@ my_mvc.register.controllerSet({
 			data.content = "nodata_template"
 			my_mvc.load.view( "baseview" , data);
 		},
+		
 		after_render: function() {
 
 			$(".re-index-element").click(function() {
@@ -258,7 +259,7 @@ my_mvc.register.controllerSet({
 		init : function (data,$prams) {
 
 			var capp = my_mvc.load.model("capp");
-			
+
 			var last_update = capp.configElement({name : "last_update"})
 			data.reindex = last_update;
 			data.content = "settings_template";
