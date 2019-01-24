@@ -41,10 +41,6 @@
 
 
 
-
-
-
-
 	<div class="hide templates_container">
 		<div id="baseview">
 			<div id="innerContent">
@@ -68,8 +64,7 @@
 				<div class="big">
 					<h2 >{!{heading}}</h2>
 					<p>{!{para}}</p>
-				</div>
-				{!{mvc_loop data="allbrands" template="brandthumbnail_template"}}
+				</div>{!{mvc_loop data="allbrandsList" template="brandthumbnail_template"}}
 			</div>
 		</div>
 		
@@ -78,56 +73,55 @@
 				<div class="big">
 					<h2>{!{heading}}</h2>
 					<p>{!{para}}</p>
-				</div>
-
-				{!{mvc_loop data="allflavours" template="flavourthumbnail_template"}}
+				</div>{!{mvc_loop data="allflavoursList" template="flavourthumbnail_template"}}
 
 			</div>
 		</div>
 
-		<div id="brandthumbnail_template">
-			<div data-mvc_controller="brand" data-pram-brandid="{!{brandid}}">
-				<div class="inner-image-container" >
-					<img src="{!{logo}}" />
+		<div id="brandthumbnail_template"><!-- 
+			 --><div data-mvc_controller="brand" class="brandthumbnail_template" data-pram-id="{!{id}}">
+					<div class="inner-image-container" >
+						<img src="{!{thumbnail}}" />
+					</div>
 					<p>{!{name}}</p>
-				</div>
-			</div>
-		</div>
-		<div id="flavourthumbnail_template">
-			<div data-mvc_controller="flavour" data-pram-flavourid="{!{flavourid}}">
-				<div class="inner-image-container" >
-					<img src="{!{logo}}" />
-					<p>{!{name}}</p>
-				</div>
-			</div>
-		</div>
+				</div><!-- 
+		--></div>
+		<div id="flavourthumbnail_template"><!-- 
+			--><div data-mvc_controller="flavour" class="flavourthumbnail_template" data-pram-id="{!{id}}">
+					<div class="inner-image-container" >
+						<img src="{!{thumbnail}}" />
+						<p>{!{name}}</p>
+					</div>
+				</div><!-- 
+		 --></div>
 
 		<div id="brand_template">
-			<div>
+			<div class="brand_template">
 				<h1>{!{name}}</h1>
-				<div class="c-s2 c-c">{!{product_list}}</div>
+				<div class="c-s2 c-c">{!{mvc_loop data="productList" template="product_grid_template"}}
+				</div>
 			</div>
 		</div>
 
 		<div id="flavour_template">
-			<div>
+			<div class="flavour_template">
 				<h1>{!{name}}</h1>
-				<div class="c-s2 c-c">{!{product_list}}</div>
+				<div class="c-s2 c-c">{!{mvc_loop data="productList" template="product_grid_template"}}
+				</div>
 			</div>
 		</div>
 		
 		<div id="product_grid_template">
-
-			<div data-mvc_controller="product" data-pram-x="{!{productid}}" data-pram-y="{!{productid}}" data-pram-z="{!{productid}}" >
+			<div data-mvc_controller="product" class="product_grid_template" data-pram-id="{!{product_id}}" >
 				<img src="{!{image}}">
 				<h3>{!{name}}</h3>
 			</div>
 		</div>
 
 		<div id="product_template">
-			<div class="c-c c-w5">
-				<div>
-					
+			<div class="c-c c-w5 product_template">
+				<div class="image-container">
+					<img src="{!{image}}">
 				</div><div>
 					<h2>{!{name}}</h2>
 					<p>{!{description}}</p>
@@ -135,13 +129,18 @@
 				</div>
 			</div>
 		</div>
+
 		<div id="nodata_template">
 
 			<div class="nodata_template">
 				<h2>Connect to internet and download data</h2>
+				<div class="msg-holder">
+					
+				</div>
 				<button class="re-index-element"> reindex </button>
 			</div>
 		</div>
+
 		<div id="settings_template">
 			<div class="c-c setting-template">
 

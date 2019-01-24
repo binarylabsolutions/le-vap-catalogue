@@ -1,5 +1,9 @@
 window.hs = (typeof window.hs == "undefined" ) ? {} : window.hs;
 
+if ( typeof window.jQuery != "undefined" ){ 
+	window.hs.$ = window.jQuery;
+}
+
 window.hs.log = (!(typeof window.hs.log == "undefined" )) ? window.hs.log : {
 
 	logging_enable : null,
@@ -53,6 +57,169 @@ window.hs.log = (!(typeof window.hs.log == "undefined" )) ? window.hs.log : {
 	},
 } ;
 
+
+
+
+/*utilities*/
+window.hs.utilities = {};
+
+window.hs.utilities.sanatize_string = function( s ) { return s.replace(/[^a-z0-9]/gi, '_').toLowerCase();   }
+window.hs.utilities.sumObjects = function(base , update ) {
+    r = {}
+    window.hs.$.each(base , function(k,v){
+        r[k] = (typeof update[k] != "undefined")  ? update[k] : base[k];
+    });
+    return r;
+}
+window.hs.utilities.replaceAll = function (find, replace, sub) {
+    return sub.replace(new RegExp(find.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1"), 'g'), replace);
+};
+
+window.hs.utilities.downloadFile = function(data, filename, type) {
+      var a = document.createElement("a"),
+          file = new Blob([data], {type: type});
+      if (window.navigator.msSaveOrOpenBlob) // IE10+
+          window.navigator.msSaveOrOpenBlob(file, filename);
+      else { // Others
+          var url = URL.createObjectURL(file);
+          a.href = url;
+          a.download = filename;
+          document.body.appendChild(a);
+          a.click();
+          setTimeout(function() {
+              document.body.removeChild(a);
+              window.URL.revokeObjectURL(url);  
+          }, 0); 
+      }
+
+}
+
+window.hs.utilities.lightBox = function (p) {
+
+    typesDefault = {"name" : "popup",}
+    p            = (!p)             ? {} : p;
+    p.heading    = (!p.heading)     ? "" : p.heading;
+    p.subHeading = (!p.subHeading)  ? "" : p.subHeading;
+    p.body       = (!p.body)        ? "" : p.body;
+    p.lock       = (!p.lock)        ? 0  : p.lock;
+    p.type       = (!p.type)        ? typesDefault  : p.type;
+
+
+
+    $e = $(".hs-pop-up").length ?  $(".hs-pop-up").html("<div></div>").children() : $("<div class='hs-pop-up'><div></div></div>").insertBefore( $("body").children().first() ).children();
+    
+
+    $e.append("<header><h3>"+ p.heading +"</h3><p>"+p.subHeading+ "</p></header><div>"+p.body+"</div>")
+
+    if (p.type.name == "conform") {
+        $e.append("<br/><br/><br/><footer class='pop-up-footer-fixed'><div class='fr'><button class='type-confrom hs-true'> confrom </button><button class='type-confrom hs-false btn-hollow'> cancel </button></div></footer>")
+        $e.find(".type-confrom").click(function(){
+            if ( $(this).hasClass("hs-true") ) {
+                p.type.succeed( p.type.succeedPrams );
+            } else {
+                p.type.failed();
+            }
+            $e.parent().remove();
+
+        })
+    }
+
+    if ( !p.lock )
+    $e.parent().click(function(e) { if ( $(e.target).is( $(this) )  ) $(this).remove();});
+
+    return $e;
+}
+window.hs.utilities.notifyHtml = function(data) {
+    defaultValues = {
+    	container : "body",
+    	type : "infomration",
+    	interval : 3000,
+    	body : "default msg",
+
+    }
+    data = window.hs.utilities.sumObjects(defaultValues, data);
+    /*
+	
+    */
+    var last = ( $(data.container).children().length ) ? 
+        $(data.container).children().last() : 
+        $(data.container).append("<div>").children().last();
+
+    $var = $("<div style='display:none;' class='hs-html-notification box "+data.type+"'><p>"+data.body+"</p></div>").insertAfter( last );
+    $var.slideDown();
+
+    setTimeout(function(p){ 
+        p.slideUp("normal", function() { $(this).remove(); } );
+    }, data.interval , $var  );
+
+}
+window.hs.utilities.compareObjects = function(o1, o2){
+    for(var p in o1){
+        if(o1.hasOwnProperty(p)){
+            if(o1[p] !== o2[p]) return false;
+        }
+    }
+    for(var p in o2){
+        if(o2.hasOwnProperty(p)){
+            if(o1[p] !== o2[p]) return false;
+        }
+    }
+    return true;
+};
+
+window.hs.utilities.wordSearch = function( SearchStr , content ) {
+
+    sArray = SearchStr.split(" "); 
+    totalMatch = 0;
+    for (var i = 0; i< sArray.length ; i++) {
+    	if ( content.toLowerCase().search( sArray[i] ) != -1 ) totalMatch++;
+    }
+    
+    if ( totalMatch == 0 || sArray.length - totalMatch > 1 ) return 0;
+    return 1;
+}
+window.hs.utilities.date= {}
+
+
+window.hs.utilities.date.getUTCTimeString = function(timestamp){
+	if ( timestamp.toString().length <= 13) {
+		var pwr = 13 - timestamp.toString().length;
+		timestamp = timestamp*Math.pow(10,pwr)
+	}
+	d = new Date(timestamp);
+	h = d.getUTCHours() + "";
+	m = d.getUTCMinutes() + "";
+	s = d.getUTCSeconds() + "";
+	
+	h = (h.length <= 1) ? "0"+h : h
+	m = (m.length <= 1) ? "0"+m : m
+	s = (s.length <= 1) ? "0"+s : s
+
+	return h + ":" + m + ":" + s
+						
+};
+window.hs.utilities.date.getDateString = function(timestamp){
+	if ( typeof timestamp == "undefined") return null;
+	if ( timestamp.toString().length <= 13) {
+		var pwr = 13 - timestamp.toString().length;
+		timestamp = timestamp*Math.pow(10,pwr)
+	}
+	var d = new Date(timestamp);
+	var str = d.getFullYear() + "-" + 
+	    ("00" + (d.getMonth() + 1)).slice(-2) + "-" + 
+	    ("00" + d.getDate()).slice(-2) + " " + 
+	    ("00" + d.getHours()).slice(-2) + ":" + 
+	    ("00" + d.getMinutes()).slice(-2) + ":" + 
+	    ("00" + d.getSeconds()).slice(-2);
+	return str
+	    
+
+						
+};
+
+
+/* big engis */
+
 window.hs.templateEngin = {
 
 		identifiers : {
@@ -71,8 +238,10 @@ window.hs.templateEngin = {
 				if ( typeof attr.data != "undefined" && typeof $data[attr.data] != "undefined" ) {
 					
 					$.each($data[attr.data], function(k,dd) {
+
 						var $obj = hs.templateEngin.getTemplateObject(attr.template);
 						$obj = hs.templateEngin.parse($obj,dd);
+
 						$html += hs.templateEngin.getHtmlStr($obj)
 					});
 				}
@@ -158,7 +327,7 @@ window.hs.templateEngin = {
 				
 				} else {
 
-					if ( typeof data[v] != "undefined" && typeof data[v] != "object" ) {
+					if ( typeof data != "undefined" && typeof data[v] != "undefined" && typeof data[v] != "object" ) {
 
 						exp_str = exp_str.replace( hs.templateEngin.identifiers.dataTag , data[v]);		
 					}
@@ -255,6 +424,7 @@ window.hs.templateEngin = {
 
 				switch (recognizeObject) {
 					case "tag":
+						
 						text = hs.templateEngin.parser.tag(result,data);
 						
 					break;
@@ -318,28 +488,40 @@ hs.mvc = (function(){
 	
 	
 	/* private functions */
+	function checkSameController(controllerName,$prams) {
+		
+		// if current_controller is not set up ,
+		if ( private_data.current_controller.name.length == 0 ) { 
+			var p = (typeof $prams == "undefined") ? {} : (typeof $prams.data == "undefined" )  ? {} : $prams.data;
+			private_data.current_controller = {
+				name : controllerName,
+				prams : p,
+			};
+			return 0;
+		}
+
+
+
+		$nameIsSame = ( controllerName == private_data.current_controller.name ) ? 1 : 0;
+
+		oldPramsData = private_data.current_controller.prams;
+		$prams_clone = JSON.parse(JSON.stringify($prams.data));
+		$pramIsSame  = hs.utilities.compareObjects(oldPramsData , $prams_clone ); 
+
+		
+		// updateing the previous details
+		private_data.current_controller = {
+			name : controllerName,
+			prams : $prams_clone,
+		};
+		if ( $nameIsSame && $pramIsSame ) {
+			return 1;
+		}
+		return 0;
+	}
 	function _callController($controller, $is_abstract = 0, $prams) {
 
 		controllerSet =  ( $is_abstract == 0 ) ? controllers : abstractControllers;
-
-		if ( $is_abstract == 0 ) {
-
-			if ( private_data.current_controller.name.length == 0 ) {
-				private_data.current_controller = {
-					name : $controller,
-					prams : $prams,
-				};
-			} else {
-				var contollername = private_data.current_controller.name;
-				console.log($prams)
-				if ( contollername == private_data.current_controller.name ) {
-					console.log("calling same controller")
-					return;
-				}
-			}
-
-			
-		}
 		if ( typeof controllerSet[$controller] == "undefined" ) { 
 			return {}
 		} else {
@@ -352,15 +534,21 @@ hs.mvc = (function(){
 				
 			} else {
 
-				
-				data = ( _c.extends ) ? _callController( _c.extends, 1 )  : {};
-				returnelem =  _c.init( data, $prams );
-				
-				if ( _c.after_render && typeof _c.after_render != "undefined" ) {
-					_c.after_render(data, $prams);
+				var returndata = {}
+				if (  _c.extends ) {
+					returndata =_callController( _c.extends, 1 );
 				}
+				if ( returndata ) {
+					returnelem =  _c.init( returndata, $prams );
+					if ( _c.after_render && typeof _c.after_render != "undefined" ) {
+						_c.after_render(returndata, $prams);
+					}
+				}
+				
+				
+				
 			}
-
+			
 			return returnelem;
 		}
 	}
@@ -465,10 +653,29 @@ hs.mvc = (function(){
 
 		},
 		load : {
-			model : function($name = null,$alies = null) {
+			model : function($name = null,$prams = null) {
 				if ( !( $name &&  $name.length) ) return null
 				if ( typeof models[$name] == "undefined" ) return null;
-				return models[$name].call();
+				var model = (function() {
+
+					var _ths = models[$name];
+					function mvc_model() {
+						
+					};
+					hs.$.each(_ths,function(k,v) {
+						if ( typeof v == "function" ) {
+							v = v.bind(_ths);
+							
+						}
+						if ( k.indexOf("_") != 0 ) {
+
+							mvc_model.prototype[k] = v;
+						}
+
+					})
+					return mvc_model;
+				}())
+				return new model();
 			},
 			view: function(elem, data ) {
 				
@@ -558,15 +765,19 @@ hs.mvc = (function(){
 				return 0;
 			}
 
-			
-			//animateElement
 			// get parameters
 			$prams = {
 				attrs : {},
+				data : {}
 			};
 			for(i = 0; i< this.attributes.length; i++) {
-				attr = this.attributes[i];
-				name = attr.name;
+				var attr = this.attributes[i];
+				var name = attr.name;
+				if ( name.indexOf("data-") != -1 ) { 
+					var _name = name.replace("data-","") 
+					$prams.data[_name] = attr.value
+				}
+
 				if ( name.indexOf("data-pram") != -1 ) {
 					name = name.replace("data-pram-","") 
 					$prams[name] = attr.value
@@ -574,8 +785,13 @@ hs.mvc = (function(){
 					$prams.attrs[name] = attr.value
 				}
 			  	
-			   	
 			}
+			var isSameController = checkSameController($controller,$prams);
+			if (isSameController) {
+				console.log("calling same controller");
+				return;
+			}
+
 			// add class active 
 			$(".active_link").removeClass("active_link");
 			$(".active_same_controller").removeClass("active_same_controller");
@@ -594,14 +810,12 @@ hs.mvc = (function(){
 			  	})
 			});
 			
-			$selecter = "[data-mvc_controller='"+$controller+"']";
+			$selecter = "";
 
 			$($selecter).addClass("active_same_controller");
-
-			$.each($prams,function(k,v) {
-				if ( k != "attrs") {
-					$selecter += "[data-pram-"+k+"='"+v+"']"
-				}
+			
+			$.each($prams.data,function(k,v) {
+				$selecter += "[data-"+k+"='"+v+"']"
 			})
 			$($selecter).addClass("active_link");
 		});

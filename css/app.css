@@ -309,11 +309,12 @@ div#applogo {width: 20%;margin: auto;}
 div#content-wraper {padding: 3% 6%;box-sizing: border-box;}
 
 .template.allbrands > div {width: 16.66%;padding: 10px;display: inline-block;vertical-align: top;box-sizing: border-box;}
-.template.allbrands .big {width: 49.98%;}
-.template.allbrands .inner-image-container {text-align: center;min-height: 90px;background: red;cursor: pointer;box-sizing: border-box;}
+
+.template.allbrands .inner-image-container {text-align: center;background: #1a1c25;cursor: pointer;box-sizing: border-box;}
 
 .template.allflavours > div {width: 20%;display: inline-block;vertical-align: top;padding: 10px;box-sizing: border-box;}
-.template.allflavours .big {width: 40%;}
+.template.allflavours .big,
+.template.allbrands .big {width: 40%;}
 
 div#footer {position: fixed;bottom: 0px;background: #252735;left: 0px;right: 0px;color: white;display: flex;}
 
@@ -332,3 +333,34 @@ div#footer .menu {width: 5%;background-color: #1b1c25;cursor: pointer;}
 
 .nodata_template {background: #0000002e;padding: 30px 10px;box-sizing: border-box;color: white;text-align: center;}
 .nodata_template h2 {font-weight: 100;}
+
+
+div#applogo {width: 15%;margin: auto;margin-bottom: 5vh;}
+
+button.re-index-element {margin: 0px;}
+
+.image-container {text-align: center;background: #1a1c25;}
+.image-container img {max-width: 150px;margin: 40px;max-height: 45vh;}
+
+.brandthumbnail_template img {width: 85%;margin: auto;}
+.brandthumbnail_template {text-align: center;}
+
+.product_template {color: #efefef;}
+.product_template h2 {margin-top: 0px;}
+.product_template > div {width: 45%;}
+.product_template > div:first-child {margin-right: 2%;}
+
+
+
+
+
+.flavour_template > h1,
+.brand_template > h1  {text-align: center;font-size: 3em;color: white;}
+
+
+.product_grid_template img {max-height: 35vh;margin: auto;display: block;}
+.product_grid_template h3 {color: white;text-align: center;margin-top: 25px;}
+
+.template {color: #eaeaea;}
+
+
